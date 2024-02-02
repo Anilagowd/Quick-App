@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+font-family: 'Arial', sans-serif;
+display: flex;
+align-items: center;
+justify-content: center;
+height: 100vh;
+margin: 0;
+}
+.quiz-container {
+max-width: 600px;
+width: 100%;
+background-color: #fff;
+padding: 20px;
+border-radius: 8px;
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.question-container {
+font-size: 18px;
+margin-bottom: 20px;
+}
+.answer-buttons button {
+display: block;
+width: 100%;
+padding: 10px;
+margin-bottom: 10px;
+text-align: left;
+background-color: #3498db;
+color: #fff;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+transition: background-color 0.3s;
+}
+.answer-buttons button:hover {
+background-color: #2980b9;
+}
+.next-button {
+background-color: #2ecc71;
+color: #fff;
+border: none;
+padding: 10px;
+border-radius: 4px;
+cursor: pointer;
+transition: background-color 0.3s;
+}
+.next-button:hover {
+background-color: #27ae60;
+}
+</style>
+<title>Quiz App</title>
+</head>
+<body>
+<div class="quiz-container">
+<div id="question-container" class="question-container"></div>
+<div id="answer-buttons" class="answer-buttons"></div>
+<button id="next-button" class="next-button"
+onclick="nextQuestion()">Next</button>
+</div>
+<script>
+const quizContainer = document.querySelector('.quiz-container');
+const questionContainer = document.getElementById('question-container');
+const answerButtons = document.getElementById('answer-buttons');
+const nextButton = document.getElementById('next-button');
+let currentQuestionIndex = 0;
+let score = 0;
+const questions = [
+{
+question: 'What is the capital of France?',
+answers: [
+{ text: 'Berlin', correct: false },
+{ text: 'Paris', correct: true },
+{ text: 'Madrid', correct: false },
+{ text: 'Rome', correct: false }
+]
+},
+{
+question: 'Which planet is known as the Red Planet?',
+answers: [
+{ text: 'Mars', correct: true },
+{ text: 'Venus', correct: false },
+{ text: 'Jupiter', correct: false },
+{ text: 'Saturn', correct: false }
+]
+},
+{
+question: 'What is the largest mammal on Earth?',
+answers: [
+{ text: 'Elephant', correct: false },
+{ text: 'Blue Whale', correct: true },
+{ text: 'Giraffe', correct: false },
+{ text: 'Hippopotamus', correct: false }
+]
+}
+];
+function startQuiz() {
+nextButton.classList.add('hide');
+score = 0;
+currentQuestionIndex = 0;
+setNextQuestion();
+}
+function setNextQuestion() {
+resetState();
+showQuestion(questions[currentQuestionIndex]);
+}
+function showQuestion(question) {
+questionContainer.innerText = question.question;
+question.answers.forEach(answer => {
+const button = document.createElement('button');
+button.innerText = answer.text;
+button.classList.add('btn');
+button.addEventListener('click', () => selectAnswer(answer));
+answerButtons.appendChild(button);
+});
+}
+function resetState() {
+clearStatusClass(document.body);
+nextButton.classList.add('hide');
+while (answerButtons.firstChild) {
+answerButtons.removeChild(answerButtons.firstChild);
+}
+}
+function selectAnswer(answer) {
+const correct = answer.correct;
+if (correct) {
+score++;
+}
+setStatusClass(document.body, correct);
+Array.from(answerButtons.children).forEach(button => {
+setStatusClass(button, button.innerText === answer.text &&
+correct);
+button.disabled = true;
+});
+nextButton.classList.remove('hide');
+}
+function setStatusClass(element, correct) {
+clearStatusClass(element);
+if (correct) {
+element.classList.add('correct');
+} else {
+element.classList.add('wrong');
+}
+}
+function clearStatusClass(element) {
+element.classList.remove('correct');
+element.classList.remove('wrong');
+}
+function nextQuestion() {
+currentQuestionIndex++;
+if (currentQuestionIndex < questions.length) {
+setNextQuestion();
+} else {
+finishQuiz();
+}
+}
+function finishQuiz() {
+quizContainer.innerHTML = `<h2>Your Score: ${score} out of
+${questions.length}</h2>`;
+}
+startQuiz();
+</script>
+</body>
+</html>
